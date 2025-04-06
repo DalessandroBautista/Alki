@@ -1,35 +1,38 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+import { AuthProvider } from './src/store/AuthContext';
+import { useAuth } from './src/store/AuthContext';
+import { View, ActivityIndicator } from 'react-native';
+
+// Importar los navegadores
+import AuthNavigator from './src/navigation/AuthNavigator';
+import AppNavigator from './src/navigation/AppNavigator';
+
+// Componente principal que decide qué navegador mostrar según el estado de autenticación
+const Navigation = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#4a90e2" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+    </NavigationContainer>
+  );
+};
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Bienvenido a Alki</Text>
-        <Text style={styles.subtitle}>Tu app de alquileres</Text>
-      </View>
-    </SafeAreaView>
+    <AuthProvider>
+      <StatusBar style="auto" />
+      <Navigation />
+    </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#888',
-  },
-});

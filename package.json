@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "mongodb": "^6.15.0"
+    "expo-status-bar": "^2.0.1",
+    "mongodb": "^6.15.0",
+    "react-dom": "^19.1.0",
+    "react-native-web": "^0.20.0"
   }
 }
