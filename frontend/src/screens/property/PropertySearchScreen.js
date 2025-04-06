@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import propertyService from '../../services/propertyService';
 import PropertyCard from '../../components/property/PropertyCard';
+
+// Solución multiplataforma para el Picker
+const Picker = Platform.select({
+  web: () => require('./WebPicker').default,
+  default: () => require('@react-native-picker/picker').Picker,
+})();
 
 const PropertySearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,13 +50,119 @@ const PropertySearchScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Busca por ubicación, nombre..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+        <Text style={styles.title}>Busca tu próximo hogar</Text>
+        
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Ubicación</Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="location-outline" size={20} color="#666" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Ciudad, barrio, código postal..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+        </View>
+        
+        <View style={styles.priceContainer}>
+          <View style={[styles.formGroup, styles.halfWidth]}>
+            <Text style={styles.label}>Precio mínimo</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="cash-outline" size={20} color="#666" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Desde..."
+                value={priceMin}
+                onChangeText={setPriceMin}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          
+          <View style={[styles.formGroup, styles.halfWidth]}>
+            <Text style={styles.label}>Precio máximo</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="cash-outline" size={20} color="#666" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Hasta..."
+                value={priceMax}
+                onChangeText={setPriceMax}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Habitaciones</Text>
+          <View style={styles.pickerContainer}>
+            {Platform.OS === 'web' ? (
+              <select 
+                style={styles.webPicker}
+                value={bedrooms}
+                onChange={(e) => setBedrooms(e.target.value)}
+              >
+                <option value="">Cualquiera</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+                <option value="5">5+</option>
+              </select>
+            ) : (
+              <Picker
+                selectedValue={bedrooms}
+                onValueChange={(itemValue) => setBedrooms(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Cualquiera" value="" />
+                <Picker.Item label="1+" value="1" />
+                <Picker.Item label="2+" value="2" />
+                <Picker.Item label="3+" value="3" />
+                <Picker.Item label="4+" value="4" />
+                <Picker.Item label="5+" value="5" />
+              </Picker>
+            )}
+          </View>
+        </View>
+        
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Tipo de propiedad</Text>
+          <View style={styles.pickerContainer}>
+            {Platform.OS === 'web' ? (
+              <select 
+                style={styles.webPicker}
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+              >
+                <option value="all">Todos los tipos</option>
+                <option value="apartment">Apartamento</option>
+                <option value="house">Casa</option>
+                <option value="studio">Estudio</option>
+                <option value="room">Habitación</option>
+              </select>
+            ) : (
+              <Picker
+                selectedValue={propertyType}
+                onValueChange={(itemValue) => setPropertyType(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Todos los tipos" value="all" />
+                <Picker.Item label="Apartamento" value="apartment" />
+                <Picker.Item label="Casa" value="house" />
+                <Picker.Item label="Estudio" value="studio" />
+                <Picker.Item label="Habitación" value="room" />
+              </Picker>
+            )}
+          </View>
+        </View>
+        
+        <TouchableOpacity 
+          style={styles.searchButton}
+          onPress={handleSearch}
+        >
           <Text style={styles.searchButtonText}>Buscar</Text>
         </TouchableOpacity>
       </View>
@@ -167,29 +279,76 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   searchContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: 'white',
+    padding: 20,
   },
-  searchInput: {
-    flex: 1,
-    height: 46,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  formGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+  },
+  inputIcon: {
+    marginHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingRight: 10,
     fontSize: 16,
   },
-  searchButton: {
-    marginLeft: 10,
-    backgroundColor: '#4a90e2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
+  priceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  halfWidth: {
+    width: '48%',
+  },
+  pickerContainer: {
+    backgroundColor: 'white',
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  webPicker: {
+    height: 50,
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 16,
+    border: 'none',
+    outline: 'none',
+  },
+  searchButton: {
+    backgroundColor: '#4a90e2',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
   },
   searchButtonText: {
     color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   filterToggle: {
@@ -226,15 +385,6 @@ const styles = StyleSheet.create({
   },
   priceSeparator: {
     marginHorizontal: 10,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-  picker: {
-    height: 40,
   },
   applyFiltersButton: {
     backgroundColor: '#4a90e2',

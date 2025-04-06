@@ -36,3 +36,6 @@ web-build/
 # Logs
 logs
 *.log
+frontend/node_modules/.yarn-integrity
+frontend/yarn.lock
+frontend/node_modules/.yarn-integrity
