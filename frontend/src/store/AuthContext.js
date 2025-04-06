@@ -1,95 +1,81 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { login, register, verifyToken } from '../services/authService';
+import authService from '../services/authService';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [userToken, setUserToken] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Verificar token al inicio
   useEffect(() => {
-    const bootstrapAsync = async () => {
+    const initAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (token) {
-          // Verificar que el token es válido
-          const user = await verifyToken(token);
-          setUserInfo(user);
-          setUserToken(token);
+        const userString = await AsyncStorage.getItem('user');
+        if (userString) {
+          setUser(JSON.parse(userString));
         }
-      } catch (e) {
-        console.log('Error al restaurar token:', e);
+      } catch (error) {
+        console.error('Error al inicializar la autenticación:', error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    bootstrapAsync();
+    initAuth();
   }, []);
 
-  // Login
-  const loginUser = async (email, password) => {
-    setIsLoading(true);
-    setError(null);
+  const login = async (credentials) => {
+    setLoading(true);
     try {
-      const response = await login(email, password);
-      setUserToken(response.token);
-      setUserInfo(response.user);
-      await AsyncStorage.setItem('userToken', response.token);
-    } catch (e) {
-      setError(e.message || 'Error al iniciar sesión');
+      const data = await authService.login(credentials);
+      setUser(data.user);
+      setError(null);
+      return data;
+    } catch (error) {
+      setError(error.message || 'Error al iniciar sesión');
+      throw error;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // Registro
-  const registerUser = async (userData) => {
-    setIsLoading(true);
-    setError(null);
+  const register = async (userData) => {
+    setLoading(true);
     try {
-      const response = await register(userData);
-      setUserToken(response.token);
-      setUserInfo(response.user);
-      await AsyncStorage.setItem('userToken', response.token);
-    } catch (e) {
-      setError(e.message || 'Error al registrarse');
+      const data = await authService.register(userData);
+      setUser(data.user);
+      setError(null);
+      return data;
+    } catch (error) {
+      setError(error.message || 'Error al registrarse');
+      throw error;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // Logout
   const logout = async () => {
-    setIsLoading(true);
-    try {
-      await AsyncStorage.removeItem('userToken');
-      setUserToken(null);
-      setUserInfo(null);
-    } catch (e) {
-      console.log('Error al cerrar sesión:', e);
-    } finally {
-      setIsLoading(false);
-    }
+    await authService.logout();
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isLoading,
-        userToken,
-        userInfo,
+        user,
+        loading,
         error,
-        login: loginUser,
-        register: registerUser,
-        logout
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-}; 
+};
+
+export const useAuth = () => useContext(AuthContext); 
