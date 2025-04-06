@@ -1,0 +1,35 @@
+{
+  "name": "Alki Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "propertyId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "conversationId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ]
+} 

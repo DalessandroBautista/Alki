@@ -1,0 +1,28 @@
+{
+  "name": "alquiler-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm run start:all",
+    "start:all": "concurrently \"npm run start:auth\" \"npm run start:property\" \"npm run start:messaging\" \"npm run start:gateway\"",
+    "start:auth": "cd services/auth-service && npm start",
+    "start:property": "cd services/property-service && npm start",
+    "start:messaging": "cd services/messaging-service && npm start",
+    "start:gateway": "cd services/api-gateway && npm start",
+    "install:all": "npm run install:auth && npm run install:property && npm run install:messaging && npm run install:gateway",
+    "install:auth": "cd services/auth-service && npm install",
+    "install:property": "cd services/property-service && npm install",
+    "install:messaging": "cd services/messaging-service && npm install",
+    "install:gateway": "cd services/api-gateway && npm install",
+    "docker:start": "docker-compose up",
+    "docker:dev": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "logs:auth": "docker-compose logs -f auth-service",
+    "logs:property": "docker-compose logs -f property-service",
+    "logs:messaging": "docker-compose logs -f messaging-service",
+    "logs:gateway": "docker-compose logs -f api-gateway"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

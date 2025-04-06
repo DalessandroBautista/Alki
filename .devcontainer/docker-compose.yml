@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - app-network
+      
+  # Microservicios integrados en el devcontainer
+  api-gateway:
+    build:
+      context: ../backend/services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PROPERTY_SERVICE_URL=http://property-service:3002
+      - MESSAGING_SERVICE_URL=http://messaging-service:3003
+      - MONGODB_URI=mongodb://mongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+      
+  auth-service:
+    build: 
+      context: ../backend/services/auth-service
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/auth-db
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+      
+  property-service:
+    build: 
+      context: ../backend/services/property-service
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3002
+      - MONGODB_URI=mongodb://mongodb:27017/property-db
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - app-network
+      
+  messaging-service:
+    build: 
+      context: ../backend/services/messaging-service
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3003
+      - MONGODB_URI=mongodb://mongodb:27017/messaging-db
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - PROPERTY_SERVICE_URL=http://property-service:3002
+    depends_on:
+      - mongodb
+      - auth-service
+      - property-service
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:
+
+networks:
+  app-network:
+    driver: bridge 
