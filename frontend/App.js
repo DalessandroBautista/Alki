@@ -8,22 +8,23 @@ import { View, ActivityIndicator } from 'react-native';
 // Importar los navegadores
 import AuthNavigator from './src/navigation/AuthNavigator';
 import AppNavigator from './src/navigation/AppNavigator';
+import MainNavigator from './src/navigation/MainNavigator';
 
-// Componente principal que decide qué navegador mostrar según el estado de autenticación
+// Componente principal que decide qué navegador mostrar
 const Navigation = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#4a90e2" />
+        <ActivityIndicator size="large" color="#003366" />
       </View>
     );
   }
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+      <MainNavigator isAuthenticated={!!user} />
     </NavigationContainer>
   );
 };

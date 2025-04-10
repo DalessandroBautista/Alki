@@ -1,14 +1,14 @@
 module.exports = {
   port: process.env.PORT || 3002,
   mongodb: {
-    uri: process.env.MONGO_URI || 'mongodb://localhost:27017/property-db',
+    uri: process.env.MONGO_URI || 'mongodb://mongodb:27017/property-db',
     options: {
       useNewUrlParser: true,
       useUnifiedTopology: true
     }
   },
   services: {
-    auth: process.env.AUTH_SERVICE_URL || 'http://auth-service:3001'
+    auth: process.env.AUTH_SERVICE_URL || 'http://localhost:3001'
   },
   pagination: {
     defaultLimit: 10,

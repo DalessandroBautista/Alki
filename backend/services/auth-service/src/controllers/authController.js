@@ -2,6 +2,7 @@ const authService = require('../services/authService');
 
 // Registro de usuario
 exports.register = async (req, res, next) => {
+  console.log('🔵 [AuthController] Ejecutando método register()');
   try {
     const { email, password, nombre, apellido, telefono, roles } = req.body;
     
@@ -37,11 +38,13 @@ exports.register = async (req, res, next) => {
 
 // Login de usuario
 exports.login = async (req, res, next) => {
+  console.log('🔵 [AuthController] Ejecutando método login()', req.body);
   try {
     const { email, password } = req.body;
     
     // Validar datos
     if (!email || !password) {
+      console.log('❌ Error: Email y contraseña son requeridos', { email, password });
       return res.status(400).json({ message: 'Email y contraseña son requeridos' });
     }
     

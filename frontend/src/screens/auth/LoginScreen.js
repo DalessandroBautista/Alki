@@ -16,10 +16,15 @@ const LoginScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
+      console.log('LoginScreen: Iniciando login con:', { email, password });
       await login({ email, password });
       // La navegación se manejará en AppNavigator según el estado de autenticación
     } catch (error) {
-      Alert.alert('Error', error.message || 'Error al iniciar sesión');
+      console.error('Error capturado en LoginScreen:', error);
+      Alert.alert(
+        'Error', 
+        error.message || 'No se pudo iniciar sesión. Verifica tus credenciales.'
+      );
     } finally {
       setLoading(false);
     }

@@ -67,7 +67,7 @@ const PropertyDetailScreen = ({ route, navigation }) => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `¡Mira esta propiedad en Alki! ${property.title} - ${property.price}€`,
+        message: `¡Mira esta propiedad en Alki! ${property.titulo} - ${property.precio}€`,
         url: `https://alki.com/properties/${property.id}`,
       });
     } catch (error) {
@@ -164,30 +164,30 @@ const PropertyDetailScreen = ({ route, navigation }) => {
       {/* Información de la propiedad */}
       <View style={styles.infoContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>{property.title}</Text>
+          <Text style={styles.title}>{property.titulo}</Text>
           <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
             <Ionicons name="share-outline" size={24} color="#4a90e2" />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.price}>{property.price}€{property.rentType === 'monthly' ? '/mes' : '/día'}</Text>
+        <Text style={styles.price}>{property.moneda} {property.precio}{property.tipoAlquiler === 'temporario' ? '/día' : '/mes'}</Text>
         
         <View style={styles.locationContainer}>
           <Ionicons name="location-outline" size={18} color="#666" />
-          <Text style={styles.location}>{property.location}</Text>
+          <Text style={styles.location}>{property.direccion?.direccion}, {property.direccion?.ciudad}</Text>
         </View>
 
         <View style={styles.featuresContainer}>
-          {property.bedrooms && (
+          {property.habitaciones && (
             <View style={styles.featureItem}>
               <Ionicons name="bed-outline" size={18} color="#666" />
-              <Text style={styles.featureText}>{property.bedrooms} hab.</Text>
+              <Text style={styles.featureText}>{property.habitaciones} hab.</Text>
             </View>
           )}
-          {property.bathrooms && (
+          {property.baños && (
             <View style={styles.featureItem}>
               <Ionicons name="water-outline" size={18} color="#666" />
-              <Text style={styles.featureText}>{property.bathrooms} baños</Text>
+              <Text style={styles.featureText}>{property.baños} baños</Text>
             </View>
           )}
           {property.size && (

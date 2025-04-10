@@ -90,6 +90,10 @@ const propertySchema = new mongoose.Schema({
     type: Boolean, 
     default: true 
   },
+  destacado: { 
+    type: Boolean,
+    default: false
+  },
   fechaPublicacion: { 
     type: Date, 
     default: Date.now 

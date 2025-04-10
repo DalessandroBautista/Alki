@@ -1,13 +1,13 @@
 module.exports = {
   port: process.env.PORT || 8000,
   services: {
-    auth: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
     property: process.env.PROPERTY_SERVICE_URL || 'http://localhost:3002',
+    auth: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
     messaging: process.env.MESSAGING_SERVICE_URL || 'http://localhost:3003'
   },
   cors: {
     origin: process.env.CORS_ORIGIN || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'tu_clave_secreta',

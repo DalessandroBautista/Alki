@@ -12,6 +12,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Middleware de logging para depuración
+app.use((req, res, next) => {
+  console.log(`🔍 [API Gateway] Recibida solicitud: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Rutas principales
 app.use('/api', routes);
 
@@ -28,4 +34,5 @@ app.get('/health', (req, res) => {
 const PORT = config.port;
 app.listen(PORT, () => {
   console.log(`API Gateway corriendo en puerto ${PORT}`);
+  console.log(`🔧 [API Gateway] Configurado para comunicarse con el servicio de propiedades en: ${config.services.property}`);
 }); 

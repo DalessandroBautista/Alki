@@ -57,18 +57,36 @@ const CreatePropertyScreen = ({ navigation }) => {
       
       // Reestructurar los datos para enviar
       const propertyData = {
-        ...formData,
-        ubicacion: {
+        titulo: formData.titulo,
+        descripcion: formData.descripcion,
+        precio: Number(formData.precio),
+        moneda: 'USD', // Por defecto
+        tipo: formData.tipo,
+        tipoAlquiler: 'permanente', // Por defecto
+        habitaciones: Number(formData.habitaciones),
+        baños: Number(formData.banos),
+        direccion: {
           direccion: formData['ubicacion.direccion'],
           ciudad: formData['ubicacion.ciudad'],
           codigoPostal: formData['ubicacion.codigoPostal'],
           pais: formData['ubicacion.pais'],
+          ubicacion: {
+            type: 'Point',
+            coordinates: [0, 0] // Coordenadas por defecto, deberían obtenerse con un servicio de geocodificación
+          }
         },
-        // Convertir a números
-        precio: Number(formData.precio),
-        habitaciones: Number(formData.habitaciones),
-        banos: Number(formData.banos),
         superficie: Number(formData.superficie),
+        servicios: {
+          wifi: amenities.wifi,
+          aireAcondicionado: amenities.aire,
+          estacionamiento: amenities.cochera,
+          piscina: amenities.pileta,
+          lavarropas: amenities.lavarropas,
+          seguridad: amenities.seguridad
+        },
+        requisitos: {
+          mascotas: amenities.mascotas
+        }
       };
       
       delete propertyData['ubicacion.direccion'];

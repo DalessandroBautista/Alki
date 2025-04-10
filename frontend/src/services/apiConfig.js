@@ -1,7 +1,26 @@
-// Usa esto para desarrollo en emulador Android
-export const API_URL = __DEV__ 
-  ? 'http://10.0.2.2:8000/api'  // Para emulador Android
-  : 'http://tudominio.com/api'; // Para producción 
+import { Platform } from 'react-native';
+
+// Valores por defecto según el entorno
+const getDefaultApiUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  if (__DEV__) {
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:8000/api';  // Android emulator
+    } else if (Platform.OS === 'ios') {
+      return 'http://localhost:8000/api';  // iOS simulator
+    } else {
+      return 'http://localhost:8000/api';  // Web
+    }
+  } else {
+    return 'http://tudominio.com/api'; // Para producción
+  }
+};
+
+export const API_URL = getDefaultApiUrl();
+console.log('🔧 API_URL configurada como:', API_URL);
 
 // Endpoints
 export const ENDPOINTS = {

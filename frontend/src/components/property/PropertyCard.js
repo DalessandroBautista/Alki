@@ -1,67 +1,84 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 const PropertyCard = ({ property, onPress }) => {
-  const { titulo, descripcion, precio, ubicacion, imagenes } = property;
+  // Verificar que la propiedad y sus campos existan para evitar errores
+  if (!property) return null;
+  
+  // URL de imagen por defecto si no existe
+  const imagenUrl = property.imagenes && property.imagenes.length > 0 
+    ? property.imagenes[0] 
+    : 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+  
+  // Extraer dirección con validación
+  const ubicacion = property.ubicacion || property.direccion || {};
+  const direccion = typeof ubicacion === 'string' 
+    ? ubicacion 
+    : ubicacion.direccion || 'Dirección no disponible';
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
-        source={{ uri: imagenes && imagenes.length > 0 ? imagenes[0] : 'https://via.placeholder.com/300x200' }}
+        source={{ uri: imagenUrl }}
         style={styles.image}
         resizeMode="cover"
       />
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>{titulo}</Text>
-        <Text style={styles.price}>${precio}/mes</Text>
-        <Text style={styles.location}>{ubicacion.direccion}</Text>
-        <Text style={styles.description} numberOfLines={2}>
-          {descripcion}
-        </Text>
+      <View style={styles.content}>
+        <Text style={styles.price}>${property.precio?.toLocaleString() || 'Consultar'}/mes</Text>
+        <Text style={styles.title} numberOfLines={1}>{property.titulo || 'Sin título'}</Text>
+        <Text style={styles.location} numberOfLines={1}>{direccion}</Text>
+        <View style={styles.details}>
+          <Text style={styles.detailText}>{property.habitaciones || 0} hab</Text>
+          <Text style={styles.detailText}>{property.banos || 0} baños</Text>
+          <Text style={styles.detailText}>{property.superficie || 0} m²</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
     backgroundColor: 'white',
     borderRadius: 12,
-    overflow: 'hidden',
     marginBottom: 16,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 4,
+    elevation: 2,
   },
   image: {
-    height: 180,
     width: '100%',
+    height: 150,
   },
-  infoContainer: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 6,
+  content: {
+    padding: 12,
   },
   price: {
-    fontSize: 16,
+    color: '#0066cc',
     fontWeight: 'bold',
-    color: '#4a90e2',
-    marginBottom: 6,
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  title: {
+    fontWeight: '600',
+    fontSize: 15,
+    marginBottom: 4,
   },
   location: {
-    fontSize: 14,
     color: '#666',
+    fontSize: 13,
     marginBottom: 8,
   },
-  description: {
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 20,
+  details: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  detailText: {
+    fontSize: 12,
+    color: '#666',
   },
 });
 

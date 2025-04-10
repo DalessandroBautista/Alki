@@ -31,7 +31,7 @@ const PropertySearchScreen = ({ navigation }) => {
         ...(priceMax && { precioMax: priceMax }),
         ...(propertyType !== 'all' && { tipo: propertyType }),
         ...(bedrooms !== 'any' && { habitaciones: bedrooms }),
-        ...(bathrooms !== 'any' && { banos: bathrooms })
+        ...(bathrooms !== 'any' && { baños: bathrooms })
       };
       
       const data = await propertyService.searchProperties(filters);

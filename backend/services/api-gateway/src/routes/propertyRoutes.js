@@ -4,21 +4,50 @@ const config = require('../config');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
-const PROPERTY_SERVICE_URL = 'http://localhost:3002';
+const PROPERTY_SERVICE_URL = process.env.PROPERTY_SERVICE_URL || 'http://localhost:3002/api';
+
+console.log('🔧 [API Gateway] Configurado para comunicarse con el servicio de propiedades en:', PROPERTY_SERVICE_URL);
+
+// Middleware para logging (para depuración)
+router.use((req, res, next) => {
+  console.log(`[Property Routes] ${req.method} ${req.path}`);
+  next();
+});
 
 // Obtener todas las propiedades
 router.get('/', async (req, res) => {
   try {
+    const propertyServiceUrl = `${config.services.property}/properties`;
+    console.log(`🔄 Enviando solicitud a: ${propertyServiceUrl}`);
+    
+    const response = await axios.get(propertyServiceUrl);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error al obtener propiedades:', error.message);
+    if (error.response) {
+      console.error('Detalles de la respuesta:', error.response.status, error.response.data);
+    }
+    res.status(500).json({ error: 'Error al recuperar propiedades' });
+  }
+});
+
+// Propiedades destacadas
+router.get('/featured', async (req, res) => {
+  try {
+    console.log('🔍 [API Gateway] Solicitando propiedades destacadas');
+    
     const response = await axios.get(
-      `${PROPERTY_SERVICE_URL}/properties`,
+      `${PROPERTY_SERVICE_URL}/properties/featured`,
       {
-        params: req.query,
-        timeout: 10000
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 5000
       }
     );
+    
+    console.log(`✅ [API Gateway] Recibidas ${response.data.length || 0} propiedades destacadas`);
     res.status(response.status).json(response.data);
   } catch (error) {
-    handleAxiosError(error, res, 'obtener propiedades');
+    handleAxiosError(error, res, 'obtener propiedades destacadas');
   }
 });
 
@@ -154,4 +183,5 @@ function handleAxiosError(error, res, operation) {
   }
 }
 
+// Exportar router
 module.exports = router;

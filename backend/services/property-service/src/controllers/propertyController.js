@@ -1,7 +1,9 @@
 const propertyService = require('../services/propertyService');
+const Property = require('../models/Property');
 
 // Obtener todas las propiedades
 exports.getAllProperties = async (req, res, next) => {
+  console.log('🟢 [PropertyController] Ejecutando método getAllProperties()');
   try {
     // Construir filtros desde query params
     const filters = {};
@@ -138,6 +140,23 @@ exports.searchByProximity = async (req, res, next) => {
     
     res.json(result);
   } catch (error) {
+    next(error);
+  }
+};
+
+// Obtener propiedades destacadas
+exports.getFeaturedProperties = async (req, res, next) => {
+  console.log('🟢 [PropertyController] Buscando propiedades destacadas');
+  try {
+    const result = await Property.find({ 
+      disponible: true,
+      destacado: true  // El modelo debe tener este campo
+    }).limit(10).sort({ fechaPublicacion: -1 });
+    
+    console.log(`✅ Encontradas ${result.length} propiedades destacadas`);
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error al buscar propiedades destacadas:', error);
     next(error);
   }
 }; 

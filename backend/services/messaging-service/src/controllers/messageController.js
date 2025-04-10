@@ -2,6 +2,7 @@ const messageService = require('../services/messageService');
 
 // Enviar un mensaje
 exports.sendMessage = async (req, res, next) => {
+  console.log('🟣 [MessageController] Ejecutando método sendMessage()');
   try {
     const { receptor, propiedad, asunto, contenido } = req.body;
     
